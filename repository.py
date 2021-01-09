@@ -1,11 +1,11 @@
 import sqlite3
 from datetime import datetime
-
+import atexit
 from DAO_Objects import Vaccines, Logistics, Clinics, Suppliers
 from DTO_Objects import Logistic, Clinic, Supplier, Vaccine
 
 
-class _Repository:
+class Repository:
     def __init__(self):
         self.conn = sqlite3.connect("database.db")
         self.vaccines = Vaccines(self.conn)
@@ -13,7 +13,7 @@ class _Repository:
         self.logistics = Logistics(self.conn)
         self.clinics = Clinics(self.conn)
 
-    def _close(self):
+    def close(self):
         self.conn.commit()
         self.conn.close()
 
@@ -76,4 +76,9 @@ class _Repository:
     def insert_vaccines(self, vaccines_data):
         for i in range(len(vaccines_data)):
             data = vaccines_data[i].split(',')
-            self.vaccines.insert(Vaccine(int(data[0]), datetime.fromisoformat(data[1]), int(data[2]), int(data[3])))
+            self.vaccines.insert(Vaccine(int(data[0]), data[1], int(data[2]), int(data[3])))
+
+
+
+repo = Repository()
+atexit.register(repo.close)

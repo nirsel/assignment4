@@ -35,5 +35,5 @@ class Clinics:
 
     def insert(self, clinic):
         self.conn.execute("""
-        INSERT INTO Clinics (id, location, demand, supplier) VALUES(?, ?, ?, ?)
+        INSERT INTO Clinics (id, location, demand, logistic) VALUES(?, ?, ?, ?)
         """,[clinic.id, clinic.location, clinic.demand, clinic.logistic])
