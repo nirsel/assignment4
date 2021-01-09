@@ -1,17 +1,18 @@
 import sqlite3
 from datetime import datetime
 import atexit
-from DAO_Objects import Vaccines, Logistics, Clinics, Suppliers
+import sys
+from DAO_Objects import _Vaccines, _Logistics, _Clinics, _Suppliers
 from DTO_Objects import Logistic, Clinic, Supplier, Vaccine
 
 
 class Repository:
     def __init__(self):
         self.conn = sqlite3.connect("database.db")
-        self.vaccines = Vaccines(self.conn)
-        self.suppliers = Suppliers(self.conn)
-        self.logistics = Logistics(self.conn)
-        self.clinics = Clinics(self.conn)
+        self.vaccines = _Vaccines(self.conn)
+        self.suppliers = _Suppliers(self.conn)
+        self.logistics = _Logistics(self.conn)
+        self.clinics = _Clinics(self.conn)
 
     def close(self):
         self.conn.commit()
@@ -58,6 +59,7 @@ class Repository:
             clinics_data.append(f.readline())
         for i in range(int(logistics)):
             logistics_data.append(f.readline())
+        f.close()
         return vaccines_data, suppliers_data, clinics_data, logistics_data
 
     def insert_logistics(self, list_data):
@@ -79,6 +81,39 @@ class Repository:
         for i in range(len(vaccines_data)):
             data = vaccines_data[i].split(',')
             self.vaccines.insert(Vaccine(int(data[0]), data[1], int(data[2]), int(data[3])))
+
+    def execute_orders(self, orders_path, output_path):
+        orders = open(orders_path,"r")
+        text_list = orders.readlines()
+        for line in text_list:
+            line=line.split(',')
+            if len(line)==2:
+                self.send_shipment(line)
+            else:
+                self.receive_shipment(line)
+            self.update_output(output_path)
+
+    def send_shipment(self, order):
+        amount=int(order[1])
+        location=order[0]
+        self.clinics.update_demand(location, amount)
+        self.vaccines.remove_amount(amount)
+        self.logistics.update_sent(location, amount)
+
+    def receive_shipment(self, order):
+        name=order[0]
+        amount=int(order[1])
+        date=order[2]
+        self.vaccines.add_order(name, amount, date)
+        self.logistics.receive(name, amount)
+
+    def update_output(self,path):
+        f=open(path, "a+")
+        inventory=self.vaccines.inventory
+        demand=self.clinics.demand
+        receive=self.logistics.count_received
+        sent=self.logistics.count_sent
+        f.write(str(inventory)+','+str(demand)+','+str(receive)+','+str(sent)+'\n')
 
 
 
