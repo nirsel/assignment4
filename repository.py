@@ -37,13 +37,15 @@ class Repository:
             quantity INTEGER NOT NULL)""")
         self.insert_vaccines(vaccines_data)
 
+
     def init_config(self, config):
         f = open(config, "r")
         text = f.readline()
+        text=text.split(',')
         vaccines = text[0]
-        suppliers = text[2]
-        clinics = text[4]
-        logistics = text[6]
+        suppliers = text[1]
+        clinics = text[2]
+        logistics = text[3]
         vaccines_data = list()
         suppliers_data = list()
         clinics_data = list()
