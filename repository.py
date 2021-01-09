@@ -1,5 +1,4 @@
 import sqlite3
-import sys
 from datetime import datetime
 
 from DAO_Objects import Vaccines, Logistics, Clinics, Suppliers
