@@ -4,6 +4,6 @@ from sqlite3 import Error
 
 import repository
 rep=repository.Repository()
-rep.create_tables()
+rep.create_tables(sys.argv[1])
 
 
