@@ -27,11 +27,11 @@ class _Repository:
         self.insert_logistics(logistics_data)
         cursor.execute("""
             CREATE TABLE Clinics(id INTEGER PRIMARY KEY, location STRING NOT NULL, demand INTEGER NOT NULL, 
-            logistic REFERENCES Logistic(id));""")
+            logistic REFERENCES Logistics(id));""")
         self.insert_clinics(clinics_data)
         cursor.execute("""
             CREATE TABLE Suppliers(id INTEGER PRIMARY KEY, name STRING NOT NULL, logistic REFERENCES 
-            Logistic(id))""")
+            Logistics(id))""")
         self.insert_suppliers(suppliers_data)
         cursor.execute("""
             CREATE TABLE Vaccines(id INTEGER PRIMARY KEY, date DATE NOT NULL, supplier REFERENCES Suppliers(id), 
