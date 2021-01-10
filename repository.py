@@ -13,6 +13,7 @@ class Repository:
         self.suppliers = _Suppliers(self.conn)
         self.logistics = _Logistics(self.conn)
         self.clinics = _Clinics(self.conn)
+        self.output=list()
 
     def close(self):
         self.conn.commit()
@@ -92,6 +93,10 @@ class Repository:
             else:
                 self.receive_shipment(line)
             self.update_output(output_path)
+        f=open(output_path,"w")
+        for line in self.output:
+            f.write(line)
+        f.close()
 
     def send_shipment(self, order):
         amount=int(order[1])
@@ -108,12 +113,12 @@ class Repository:
         self.logistics.receive(name, amount)
 
     def update_output(self,path):
-        f=open(path, "a+")
         inventory=self.vaccines.inventory
         demand=self.clinics.demand
         receive=self.logistics.count_received
         sent=self.logistics.count_sent
-        f.write(str(inventory)+','+str(demand)+','+str(receive)+','+str(sent)+'\n')
+        line=(str(inventory)+','+str(demand)+','+str(receive)+','+str(sent)+'\n')
+        self.output.append(line)
 
 
 
