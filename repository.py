@@ -27,26 +27,37 @@ class Repository:
         cursor = self.conn.cursor()
         # creates table Logistics
         cursor.execute("""
-            CREATE TABLE Logistics(id INTEGER PRIMARY KEY,name STRING NOT NULL, count_sent INTEGER NOT NULL, 
+            CREATE TABLE Logistics(id INTEGER PRIMARY KEY,
+            name STRING NOT NULL,
+            count_sent INTEGER NOT NULL, 
             count_received INTEGER NOT NULL);""")
         # insert initial values
         self.insert_logistics(logistics_data)
         # creates table Clinics
         cursor.execute("""
-            CREATE TABLE Clinics(id INTEGER PRIMARY KEY, location STRING NOT NULL, demand INTEGER NOT NULL, 
-            logistic REFERENCES Logistics(id));""")
+            CREATE TABLE Clinics(id INTEGER PRIMARY KEY,
+            location STRING NOT NULL, 
+            demand INTEGER NOT NULL, 
+            logistic INTEGER,
+            FOREIGN KEY(logistic) REFERENCES Logistics(id));""")
         # insert initial values
         self.insert_clinics(clinics_data)
         # creates table Suppliers
         cursor.execute("""
-            CREATE TABLE Suppliers(id INTEGER PRIMARY KEY, name STRING NOT NULL, logistic REFERENCES 
+            CREATE TABLE Suppliers(id INTEGER PRIMARY KEY, 
+            name STRING NOT NULL,
+            logistic INTEGER, 
+            FOREIGN KEY (logistic) REFERENCES 
             Logistics(id))""")
         # insert initial values
         self.insert_suppliers(suppliers_data)
         # creates table Vaccines
         cursor.execute("""
-            CREATE TABLE Vaccines(id INTEGER PRIMARY KEY, date DATE NOT NULL, supplier REFERENCES Suppliers(id), 
-            quantity INTEGER NOT NULL)""")
+            CREATE TABLE Vaccines(id INTEGER PRIMARY KEY, 
+            date DATE NOT NULL,
+            supplier INTEGER, 
+            quantity INTEGER NOT NULL,
+            FOREIGN KEY (supplier) REFERENCES Suppliers(id))""")
         # insert initial values
         self.insert_vaccines(vaccines_data)
 
