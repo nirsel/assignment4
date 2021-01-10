@@ -1,3 +1,5 @@
+
+# class Vaccine represents a singe vaccine and its relevant data
 class Vaccine:
     def __init__(self, id, date, supplier, quantity):
         self.id=id
@@ -5,6 +7,7 @@ class Vaccine:
         self.supplier=supplier
         self.quantity=quantity
 
+# class Clinic represents a singe clinic and its relevant data
 class Clinic:
     def __init__(self, id, location, demand, logistic):
         self.id=id
@@ -12,6 +15,8 @@ class Clinic:
         self.demand=demand
         self.logistic=logistic
 
+
+# class Supplier represents a singe supplier and its relevant data
 class Supplier:
     def __init__(self, id, name, logistic):
         self.id=id
@@ -19,6 +24,7 @@ class Supplier:
         self.logistic=logistic
 
 
+# class Logistic represents a singe logistic and its relevant data
 class Logistic:
     def __init__(self, id, name, count_sent, count_received):
         self.id=id
