@@ -28,7 +28,7 @@ class Repository:
         # creates table Logistics
         cursor.execute("""
             CREATE TABLE Logistics(id INTEGER PRIMARY KEY,
-            name STRING NOT NULL,
+            name TEXT NOT NULL,
             count_sent INTEGER NOT NULL, 
             count_received INTEGER NOT NULL);""")
         # insert initial values
@@ -36,7 +36,7 @@ class Repository:
         # creates table Clinics
         cursor.execute("""
             CREATE TABLE Clinics(id INTEGER PRIMARY KEY,
-            location STRING NOT NULL, 
+            location TEXT NOT NULL, 
             demand INTEGER NOT NULL, 
             logistic INTEGER,
             FOREIGN KEY(logistic) REFERENCES Logistics(id));""")
@@ -45,7 +45,7 @@ class Repository:
         # creates table Suppliers
         cursor.execute("""
             CREATE TABLE Suppliers(id INTEGER PRIMARY KEY, 
-            name STRING NOT NULL,
+            name TEXT NOT NULL,
             logistic INTEGER, 
             FOREIGN KEY (logistic) REFERENCES 
             Logistics(id))""")
