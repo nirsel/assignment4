@@ -8,7 +8,7 @@ class _Vaccines:
     def __init__(self, conn):
         self.conn = conn
         self.inventory = 0
-        self.last_id = 0
+        self.max_id = 0
 
     #  method insert to insert a new row to the table with the relevant info: id, date, supplier, quantity
     def insert(self, vaccine):
@@ -16,7 +16,8 @@ class _Vaccines:
         INSERT INTO Vaccines (id, date, supplier, quantity) VALUES(?, ?, ?, ?)
         """, [vaccine.id, vaccine.date, vaccine.supplier, vaccine.quantity])
         self.inventory = self.inventory + vaccine.quantity
-        self.last_id = vaccine.id
+        if vaccine.id>self.max_id:
+            self.max_id = vaccine.id
 
     # method remove_amount removes the amount from the inventory, while making sure older vaccines will be shipped
     # prior to newer ones
@@ -26,8 +27,9 @@ class _Vaccines:
             cursor = self.conn.cursor()
             cursor.execute("""
             SELECT id, quantity
-            FROM Vaccines""")
-            (id, quantity) = cursor.fetchone()  # fetch only the first row
+            FROM Vaccines
+            """)
+            (id, quantity) = cursor.fetchone()# fetch only the first row
             if quantity <= amount:
                 amount = amount - quantity
                 self.delete_entry(id)  # delete this row from the table since quantity<=amount
@@ -53,7 +55,7 @@ class _Vaccines:
         FROM Suppliers
         WHERE name=(?)""", [name])
         supplier_id = cursor.fetchone()[0]
-        self.insert(Vaccine(self.last_id + 1, date, supplier_id, amount))
+        self.insert(Vaccine(self.max_id + 1, date, supplier_id, amount))
 
 
 # class _Suppliers represents the table suppliers
@@ -89,17 +91,10 @@ class _Logistics:
         FROM Clinics
         WHERE location=(?)""", [location])
         logistic = cursor.fetchone()[0]
-        # fetch the count_sent in the DB associated to a specific id.
-        cursor.execute("""
-        SELECT count_sent  
-        FROM Logistics
-        WHERE id=(?)""", [logistic])
-        count = cursor.fetchone()[0]
-        # update count_sent to the new value (count + amount)
         cursor.execute("""
         UPDATE Logistics
-        SET count_sent=(?)
-        WHERE id = (?)""", [count + amount, logistic])
+        SET count_sent=count_sent+(?)
+        WHERE id = (?)""", [amount, logistic])
         self.count_sent = self.count_sent + amount
 
     # method receive updates the amount received
@@ -111,17 +106,11 @@ class _Logistics:
         FROM Suppliers
         WHERE name=(?)""", [name])
         logistic = cursor.fetchone()[0]
-        # fetch the value of count_received in the DS
-        cursor.execute("""
-                SELECT count_received
-                FROM Logistics
-                WHERE id=(?)""", [logistic])
-        count = cursor.fetchone()[0]
         # updates the amount received to the right supplier.
         cursor.execute("""
         UPDATE Logistics
-        SET count_received=(?)
-        WHERE id=(?)""", [count + amount, logistic])
+        SET count_received=count_received+(?)
+        WHERE id=(?)""", [amount, logistic])
         self.count_received = self.count_received + amount
 
 
@@ -142,14 +131,9 @@ class _Clinics:
     def update_demand(self, location, amount):
         cursor = self.conn.cursor()
         # fetch the right location
-        cursor.execute("""
-        SELECT demand
-        FROM Clinics
-        WHERE location=(?)""", [location])
-        curr_demand = cursor.fetchone()[0]
         # update demand to the new value (curr_demand - amount)
         self.conn.execute("""
         UPDATE Clinics
-        SET demand=(?)
-        WHERE location=(?)""", [curr_demand - amount, location])
+        SET demand=demand-(?)
+        WHERE location=(?)""", [amount, location])
         self.demand = self.demand - amount
