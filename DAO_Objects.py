@@ -28,6 +28,7 @@ class _Vaccines:
             cursor.execute("""
             SELECT id, quantity
             FROM Vaccines
+            ORDER BY date ASC
             """)
             (id, quantity) = cursor.fetchone()# fetch only the first row
             if quantity <= amount:

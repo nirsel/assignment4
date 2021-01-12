@@ -65,6 +65,7 @@ class Repository:
     def init_config(self, config):
         f = open(config, "r")
         text = f.readline()
+        text=text.strip('\n')
         text = text.split(',')
         vaccines = text[0]
         suppliers = text[1]
@@ -114,6 +115,7 @@ class Repository:
         orders = open(orders_path, "r")
         text_list = orders.readlines()
         for line in text_list:
+            line=line.strip('\n')
             line = line.split(',')
             if len(line) == 2:
                 self.send_shipment(line)
