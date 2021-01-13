@@ -1,13 +1,11 @@
 import sqlite3
-from datetime import datetime
 import atexit
-import sys
 from DAO_Objects import _Vaccines, _Logistics, _Clinics, _Suppliers
 from DTO_Objects import Logistic, Clinic, Supplier, Vaccine
 
 
 # constructor to the repository
-class Repository:
+class _Repository:
     def __init__(self):
         self.conn = sqlite3.connect("database.db")
         self.vaccines = _Vaccines(self.conn)
@@ -153,5 +151,5 @@ class Repository:
         self.output.append(line)
 
 
-repo = Repository()
+repo = _Repository()
 atexit.register(repo.close)
